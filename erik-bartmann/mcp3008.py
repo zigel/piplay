@@ -52,5 +52,7 @@ PAUSE      = 0.5 # Anzeigepause
 setupGPIO(SCLK, MOSI, MISO, CS) # GPIO-Pin Setup
 
 while True:
-    print 'Analoger Wert: ', \
-    readAnalogData(ADCChannel, SCLK, MOSI, MISO, CS, PAUSE)
+    print 'Values: ', \
+    readAnalogData(0, SCLK, MOSI, MISO, CS, 0.1), \
+    readAnalogData(1, SCLK, MOSI, MISO, CS, 0.1),  \
+    readAnalogData(2, SCLK, MOSI, MISO, CS, 0.5)
