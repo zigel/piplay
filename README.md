@@ -6,3 +6,11 @@
 - [ ] 16x 10kO Resistors
 - [ ] prüfspitzen 4mm technik
 - [ ] kabel schwarz, rot, grün
+
+## TODO
+- MCP3008
+  - [ ] test spidev 
+  - [ ] optimize spidev bytes
+- IO PI Plus
+  - [ ] solder connectors 
+  - [ ] try LDRs with different pullups
