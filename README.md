@@ -5,3 +5,4 @@
   - http://www.pollin.de/shop/dt/NDAyOTc4OTk-/Bauelemente_Bauteile/Aktive_Bauelemente/Optoelektronik/Fotowiderstand_PFW1251_12_mm_5_Stueck.html 
 - [ ] 16x 10kO Resistors
 - [ ] prüfspitzen 4mm technik
+- [ ] kabel schwarz, rot, grün
