@@ -14,3 +14,11 @@
 - IO PI Plus
   - [ ] solder connectors 
   - [ ] try LDRs with different pullups
+
+## Steps
+- install spidev (from http://raspberrypi-aa.github.io/session3/spi.html)
+```
+git clone git://github.com/doceme/py-spidev
+cd py-spidev
+sudo python setup.py install
+```
