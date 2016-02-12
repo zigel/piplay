@@ -9,10 +9,10 @@
 
 ## TODO
 - MCP3008
-  - [ ] test spidev 
-  - [ ] optimize spidev bytes
+  - [x] test spidev 
+  - [x] optimize spidev bytes - **doesn't work** with less than 3 bytes input
 - IO PI Plus
-  - [ ] solder connectors 
+  - [x] solder connectors 
   - [ ] try LDRs with different pullups
 
 ## Steps
