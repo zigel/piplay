@@ -22,7 +22,9 @@ def main():
     ch      = 0         # ADC-Kanalnummer
     delay   = 1         # Pausenwert
     while True:
-        print mcp3008.readAnalogData(ch)
+        for ch in range(0,4):
+            print mcp3008.readAnalogData(ch)
+        print "----"
         sleep(delay)
     
 if __name__ == '__main__':

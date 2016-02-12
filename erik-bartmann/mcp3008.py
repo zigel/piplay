@@ -53,6 +53,7 @@ setupGPIO(SCLK, MOSI, MISO, CS) # GPIO-Pin Setup
 
 while True:
     print 'Values: ', \
-    readAnalogData(0, SCLK, MOSI, MISO, CS, 0.1), \
-    readAnalogData(1, SCLK, MOSI, MISO, CS, 0.1),  \
-    readAnalogData(2, SCLK, MOSI, MISO, CS, 0.5)
+    readAnalogData(0, SCLK, MOSI, MISO, CS, 0.01), \
+    readAnalogData(1, SCLK, MOSI, MISO, CS, 0.01),  \
+    readAnalogData(2, SCLK, MOSI, MISO, CS, 0.01),  \
+    readAnalogData(3, SCLK, MOSI, MISO, CS, 0.5)
