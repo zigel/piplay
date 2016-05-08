@@ -40,6 +40,7 @@ Where 65:0 has to be replaced by the MIDI sequencer that you see after running  
 #### Further reading
  - additional timidity setup see here: https://www.raspberrypi.org/forums/viewtopic.php?f=38&t=89102
  - instruments: https://www.raspberrypi.org/forums/viewtopic.php?f=77&t=127837
+ - __connecting ports__: https://chivalrytimberz.wordpress.com/ 
  
 ### python-rtmidi 
 - install http://trac.chrisarndt.de/code/wiki/python-rtmidi/install%20
