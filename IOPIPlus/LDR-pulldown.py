@@ -24,7 +24,7 @@ sensorbus = IoPi(i2c_bus, 0x20)
 
 # sensorbus.set_pin_direction(1, 1)  # set pin 1 as an input
 
-# ledbus.set_pin_direction(8, 0)  # set pin 8 as an output
+# ledbus.set_pin_direction(8, 0)  # set pin 8 as an ou tput
 
 # ledbus.write_pin(8, 0)  # turn off pin 8
 
@@ -42,10 +42,16 @@ sensorbus.set_port_direction(1, 0xFF)
 # sensorbus.set_port_pullups(1, 0xFF)
 # sensorbus.invert_port(1, 0xFF)
 
-
+print "start"
+vold = 99
 while True:
-    print sensorbus.read_port(1)
-    time.sleep(0.5) 
+    v = sensorbus.read_port(1)
+    # print v
+    if v != vold:
+        print v
+        # print "CCC"
+        vold = v
+    time.sleep(0.1) 
     # if sensorbus.read_pin(1) == 1:  # check to see if the button is pressed
         # print 'button pressed'  # print a message to the screen
         # # ledbus.write_pin(8, 1)  # turn on the led on pin 8
