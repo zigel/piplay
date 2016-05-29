@@ -10,28 +10,30 @@ def NoteFromString(StringNum):
     return 60 + StringNum
 
 def Init_Midi():
-    global midiout
-    midiout = rtmidi.MidiOut()
-    midiout.open_port(1) if midiout.get_ports() else  midiout.open_virtual_port("My virtual output")
+    global G_MIDIOUT
+    global G_MIDIPORT
+    
+    G_MIDIOUT = rtmidi.MidiOut()
+    G_MIDIOUT.open_port(1) if G_MIDIOUT.get_ports() else  G_MIDIOUT.open_virtual_port("My virtual output")
 
 def play_string(string):
-    global midiout
+    global G_MIDIOUT
     print "play " + str(string + 1)
     note = NoteFromString(string)
-    midiout.send_message(note_on(note))
-    time.sleep(2) 
-    midiout.send_message(note_off(note))
+    G_MIDIOUT.send_message(note_on(note))
+    time.sleep(5) 
+    G_MIDIOUT.send_message(note_off(note))
     print "-play " + str(string + 1)
 
 def Change_String(string, State):
-    global midiout
+    global G_MIDIOUT
     note = NoteFromString(string)
     if (State == 0):
-        # midiout.send_message(note_on(note))
+        # G_MIDIOUT.send_message(note_on(note))
         # print "play " + str(string + 1)
         Thread(target=play_string, args=(string,)).start()
     else:
-        midiout.send_message(note_off(note))
+        G_MIDIOUT.send_message(note_off(note))
         print "stop " + str(string + 1)
     pass
 
@@ -69,7 +71,7 @@ def Check_Strings():
         # print "{0:b}".format(string_state)
         _change_line = ""
         _new_line = ""
-        for b in range(0, 16):
+        for b in range(0, 12):
             mask = 1 << b
             oldbit = last_string_state & mask
             newbit = string_state & mask
@@ -88,8 +90,14 @@ def Check_Strings():
 def Main_Loop():
     while True:
         Check_Strings()
-        time.sleep(0.1) 
+        time.sleep(0.05) 
 
+def Select_Instrument(Instr):
+    global G_MIDIOUT
+    msg = [PROGRAM_CHANGE, Instr] 
+    G_MIDIOUT.send_message(msg)
+    
+        
 def Start_All():
     print "Start Others"
     Init_Others()
@@ -97,6 +105,7 @@ def Start_All():
     Init_IOPi()
     print "Init midi"
     Init_Midi()
+    Select_Instrument(7)
     print "Start Loop"
     Main_Loop()
     
