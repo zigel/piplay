@@ -1,0 +1,14 @@
+N   LDR-Low LDR-Hi  PullDown
+
+1   2-15K   220R    480R          
+2   2-15K   280R    610R
+3
+4   2-15K   220R    480R          
+5   fiX fiX fiX fiX fiX 
+6
+7
+8
+9
+10
+11
+12
