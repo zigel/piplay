@@ -92,9 +92,10 @@ def hwbutton_pressed(channel):
     portb = buttonbus.read_interrupt_status(1)
     
     # loop through each bit in the porta variable and check if the bit is 1 which will indicate a button has been pressed
-    print "interrupt"
+    # print "interrupt"
     if 1 & portb:
-        print "bit found"
+        # print "bit found"
+        Cycle_Instrument()
     while portb == buttonbus.read_port(1):
         time.sleep(0.01)
     
@@ -111,6 +112,8 @@ def Read_IOPiPorts():
     
 def Init_Others():
     global last_string_state
+    global instr_num
+    instr_num = 0
     last_string_state = 0
     
 
@@ -147,7 +150,15 @@ def Select_Instrument(Instr):
     global G_MIDIOUT
     msg = [PROGRAM_CHANGE, Instr] 
     G_MIDIOUT.send_message(msg)
-    
+    Change_String(1, 0)
+    time.sleep(1) 
+    Change_String(1, 1)
+
+def Cycle_Instrument():
+    global instr_num
+    instr_num += 1
+    print "Instrument", instr_num
+    Select_Instrument(instr_num)
         
 def Start_All():
     print "Start Others"
@@ -156,7 +167,7 @@ def Start_All():
     Init_IOPi()
     print "Init midi"
     Init_Midi()
-    Select_Instrument(7)
+    Select_Instrument(0)
     print "Start Loop"
     Main_Loop()
     
