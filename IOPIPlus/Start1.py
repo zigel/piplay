@@ -5,6 +5,7 @@ from ABE_helpers import ABEHelpers
 from ABE_IoPi import IoPi
 from rtmidi.midiconstants import *
 from threading import Thread
+import RPi.GPIO as GPIO
 
 def NoteFromString(StringNum):
     return 60 + StringNum
@@ -47,14 +48,60 @@ def note_off(note):
     return [NOTE_OFF, note, 0]
 
     
-def Init_IOPi():
+def Init_IOPi(): 
     global sensorbus    
+    global buttonbus
     i2c_helper = ABEHelpers()
     i2c_bus = i2c_helper.get_smbus()
     sensorbus = IoPi(i2c_bus, 0x20) 
     # set both rows of pins to input mode
     sensorbus.set_port_direction(0, 0xFF)
     sensorbus.set_port_direction(1, 0xFF)
+    #setup interrupts on bus 2, port 1
+    buttonbus = IoPi(i2c_bus, 0x21)
+    # Set all pins on the bus to be inputs with internal pull-ups enabled.
+    buttonbus.set_port_pullups(1, 0xFF)
+    buttonbus.set_port_direction(1, 0xFF)
+    # Inverting the ports will allow a button connected to ground to register as 1 or on.
+    buttonbus.invert_port(1, 0xFF)  # invert port 1 so a button press will register as 1
+    # Set the interrupt polarity to be active low and mirroring enabled, so
+    # INT A and INT B go low when an interrupt is triggered
+    buttonbus.set_interrupt_polarity(0)
+    #buttonbus.mirror_interrupts(1)
+    # Set the interrupts default value to 0 so it will trigger when any of the pins on the bus change to 1
+    buttonbus.set_interrupt_defaults(1, 0x00)
+    # Set the interrupt type to be 0xFF for port B so an interrupt is
+    # fired when the pin matches the default value
+    buttonbus.set_interrupt_type(1, 0xFF)
+    # Enable interrupts for all pins on the port
+    buttonbus.set_interrupt_on_port(1, 0xFF)
+    # reset the interrups on the IO Pi bus 
+    buttonbus.reset_interrupts()
+
+    GPIO.setmode(GPIO.BCM) 
+
+    # Set up GPIO 23 as an input. The pull-up resistor is disabled as the level shifter will act as a pull-up. 
+    GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+    # when a falling edge is detected on GPIO pin 23 the function button_pressed will be run  
+    GPIO.add_event_detect(23, GPIO.FALLING, callback=hwbutton_pressed) 
+    # create a function  to be called when GPIO 23 falls low
+
+def hwbutton_pressed(channel): 
+    global buttonbus
+    
+    portb = buttonbus.read_interrupt_status(1)
+    
+    # loop through each bit in the porta variable and check if the bit is 1 which will indicate a button has been pressed
+    print "interrupt"
+    if 1 & portb:
+        print "bit found"
+    while portb == buttonbus.read_port(1):
+        time.sleep(0.01)
+    
+    # reset the interrupts on the bus
+    
+    buttonbus.reset_interrupts()
+
     
 def Read_IOPiPorts():
     global sensorbus    
