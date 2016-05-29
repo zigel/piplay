@@ -25,7 +25,7 @@ def play_string(string):
     time.sleep(2) 
     still_playing = 1 - (1 & (last_string_state << string))
     # print string, last_string_state << string, 1 & (last_string_state << string), still_playing
-    if still_playing == 0:
+    if True: #still_playing == 0:
         G_MIDIOUT.send_message(note_off(note))
         print "-play " + str(string + 1)
 
@@ -57,6 +57,30 @@ def Init_IOPi():
     # set both rows of pins to input mode
     sensorbus.set_port_direction(0, 0xFF)
     sensorbus.set_port_direction(1, 0xFF)
+    
+    # Set the interrupt polarity to be active low and mirroring enabled, so
+    # INT A and INT B go low when an interrupt is triggered
+    sensorbus.set_interrupt_polarity(0)
+    sensorbus.mirror_interrupts(1)
+    sensorbus.set_interrupt_defaults(1, 0)
+    sensorbus.set_interrupt_defaults(1, 0)
+    # Set the interrupt type to be 0xFF for port B so an interrupt is
+    # fired when the pin matches the default value
+    sensorbus.set_interrupt_type(0, 0)
+    sensorbus.set_interrupt_type(1, 0)
+    # Enable interrupts for all pins on the port
+    sensorbus.set_interrupt_on_port(0, 0xFF)
+    sensorbus.set_interrupt_on_port(1, 0xFF)
+    # reset the interrups on the IO Pi bus 
+    sensorbus.reset_interrupts()
+
+    GPIO.setmode(GPIO.BCM) 
+    GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+    # when a falling edge is detected on GPIO pin 23 the function button_pressed will be run  
+    GPIO.add_event_detect(27, GPIO.FALLING, callback=string_touched) 
+
+    
+    
     #setup interrupts on bus 2, port 1
     buttonbus = IoPi(i2c_bus, 0x21)
     # Set all pins on the bus to be inputs with internal pull-ups enabled.
@@ -78,7 +102,6 @@ def Init_IOPi():
     # reset the interrups on the IO Pi bus 
     buttonbus.reset_interrupts()
 
-    GPIO.setmode(GPIO.BCM) 
 
     # Set up GPIO 23 as an input. The pull-up resistor is disabled as the level shifter will act as a pull-up. 
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
@@ -103,11 +126,31 @@ def hwbutton_pressed(channel):
     
     buttonbus.reset_interrupts()
 
+
+def string_touched(channel): 
+    global sensorbus
+    # print "bom"
+    porta = sensorbus.read_interrupt_status(0)
+    portb = sensorbus.read_interrupt_status(1)
+        
+    Check_Strings()
+    while ((porta == sensorbus.read_port(0)) and (portb == sensorbus.read_port(1))):
+        time.sleep(0.05)
+    # time.sleep(0.05)
+    sensorbus.reset_interrupts()
+
+
     
 def Read_IOPiPorts():
     global sensorbus    
     port0 = sensorbus.read_port(0)
     port1 = sensorbus.read_port(1)
+    return port0 + (port1 << 8)
+    
+def Read_IOPiPorts_Interrupt():
+    global sensorbus    
+    port0 = sensorbus.read_interrupt_status(0)
+    port1 = sensorbus.read_interrupt_status(1)
     return port0 + (port1 << 8)
     
 def Init_Others():
@@ -120,7 +163,7 @@ def Init_Others():
 def Check_Strings():
     global last_string_state
     string_state = Read_IOPiPorts()
-    if string_state != last_string_state:
+    if True: #string_state != last_string_state:
         # print "*" * 16
         # print "{0:b}".format(string_state)
         _change_line = ""
@@ -146,13 +189,20 @@ def Main_Loop():
         Check_Strings()
         time.sleep(0.05) 
 
+def probe_note():
+    global G_MIDIOUT
+    note = 60
+    G_MIDIOUT.send_message(note_off(note))
+    G_MIDIOUT.send_message(note_on(note))
+    time.sleep(1) 
+    G_MIDIOUT.send_message(note_off(note))
+
+
 def Select_Instrument(Instr):
     global G_MIDIOUT
     msg = [PROGRAM_CHANGE, Instr] 
     G_MIDIOUT.send_message(msg)
-    Change_String(1, 0)
-    time.sleep(1) 
-    Change_String(1, 1)
+    Thread(target=probe_note).start()
 
 def Cycle_Instrument():
     global instr_num
@@ -168,8 +218,10 @@ def Start_All():
     print "Init midi"
     Init_Midi()
     Select_Instrument(0)
-    print "Start Loop"
-    Main_Loop()
+    # print "Start Loop"
+    # Main_Loop()
+    raw_input("press enter to exit ")
+
     
 Start_All()
     
