@@ -21,9 +21,12 @@ def play_string(string):
     print "play " + str(string + 1)
     note = NoteFromString(string)
     G_MIDIOUT.send_message(note_on(note))
-    time.sleep(5) 
-    G_MIDIOUT.send_message(note_off(note))
-    print "-play " + str(string + 1)
+    time.sleep(2) 
+    still_playing = 1 - (1 & (last_string_state << string))
+    # print string, last_string_state << string, 1 & (last_string_state << string), still_playing
+    if still_playing == 0:
+        G_MIDIOUT.send_message(note_off(note))
+        print "-play " + str(string + 1)
 
 def Change_String(string, State):
     global G_MIDIOUT
@@ -62,6 +65,7 @@ def Read_IOPiPorts():
 def Init_Others():
     global last_string_state
     last_string_state = 0
+    
 
 def Check_Strings():
     global last_string_state
