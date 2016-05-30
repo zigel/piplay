@@ -78,7 +78,7 @@ def Init_IOPi():
     # reset the interrups on the IO Pi bus 
     buttonbus.reset_interrupts()
 
-
+    GPIO.setmode(GPIO.BCM)
     # Set up GPIO 23 as an input. The pull-up resistor is disabled as the level shifter will act as a pull-up. 
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
     # when a falling edge is detected on GPIO pin 23 the function button_pressed will be run  
@@ -119,7 +119,7 @@ def Init_Others():
 def Check_Strings():
     global last_string_state
     string_state = Read_IOPiPorts()
-    if True: #string_state != last_string_state:
+    if string_state != last_string_state:
         # print "*" * 16
         # print "{0:b}".format(string_state)
         _change_line = ""
