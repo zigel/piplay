@@ -25,7 +25,7 @@ def play_string(string):
     time.sleep(2) 
     still_playing = 1 - (1 & (last_string_state << string))
     # print string, last_string_state << string, 1 & (last_string_state << string), still_playing
-    if still_playing == 0:
+    if True: #still_playing == 0:
         G_MIDIOUT.send_message(note_off(note))
         print "-play " + str(string + 1)
 
@@ -78,7 +78,6 @@ def Init_IOPi():
     # reset the interrups on the IO Pi bus 
     buttonbus.reset_interrupts()
 
-    GPIO.setmode(GPIO.BCM) 
 
     # Set up GPIO 23 as an input. The pull-up resistor is disabled as the level shifter will act as a pull-up. 
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
@@ -120,7 +119,7 @@ def Init_Others():
 def Check_Strings():
     global last_string_state
     string_state = Read_IOPiPorts()
-    if string_state != last_string_state:
+    if True: #string_state != last_string_state:
         # print "*" * 16
         # print "{0:b}".format(string_state)
         _change_line = ""
@@ -146,13 +145,20 @@ def Main_Loop():
         Check_Strings()
         time.sleep(0.05) 
 
+def probe_note():
+    global G_MIDIOUT
+    note = 60
+    G_MIDIOUT.send_message(note_off(note))
+    G_MIDIOUT.send_message(note_on(note))
+    time.sleep(1) 
+    G_MIDIOUT.send_message(note_off(note))
+
+
 def Select_Instrument(Instr):
     global G_MIDIOUT
     msg = [PROGRAM_CHANGE, Instr] 
     G_MIDIOUT.send_message(msg)
-    Change_String(1, 0)
-    time.sleep(1) 
-    Change_String(1, 1)
+    Thread(target=probe_note).start()
 
 def Cycle_Instrument():
     global instr_num
