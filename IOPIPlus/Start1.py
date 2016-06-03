@@ -8,7 +8,8 @@ from threading import Thread
 import RPi.GPIO as GPIO
 
 def NoteFromString(StringNum):
-    return 60 + StringNum
+    global G_NOTELIST
+    return G_NOTELIST[StringNum]
 
 def Init_Midi():
     global G_MIDIOUT
@@ -112,6 +113,10 @@ def Read_IOPiPorts():
 def Init_Others():
     global last_string_state
     global instr_num
+    global G_NOTELIST
+    global G_INSTRUMENTS
+    G_NOTELIST = [43, 45, 47, 48, 50, 52, 54, 55, 57, 59, 60, 62]
+    G_INSTRUMENTS = [0, 1, 4, 6, 8, 9, 13, 19, 26, 40, 42, 47, 53, 58, 60, 71, 76, 88, 95, 120, 122]
     instr_num = 0
     last_string_state = 0
     
@@ -161,10 +166,12 @@ def Select_Instrument(Instr):
     Thread(target=probe_note).start()
 
 def Cycle_Instrument():
+    global G_INSTRUMENTS
     global instr_num
-    instr_num += 1
-    print "Instrument", instr_num
-    Select_Instrument(instr_num)
+    instr_num = (instr_num + 1) % len(G_INSTRUMENTS)
+    i = G_INSTRUMENTS[instr_num]
+    print "Instrument", i
+    Select_Instrument(i)
         
 def Start_All():
     print "Start Others"
