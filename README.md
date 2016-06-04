@@ -49,6 +49,7 @@ Where 65:0 has to be replaced by the MIDI sequencer that you see after running  
 - cython: `sudo pip install Cython --install-option="--no-cython-compile"`
 - libasound: `sudo apt-get install libasound2-dev`
 - jack: `sudo apt-get install libjack-jackd2-dev`
+- Python.h sudo `apt-get install python-dev` 
  
 ### first working samle
 ```
