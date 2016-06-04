@@ -8,8 +8,10 @@ from threading import Thread
 import RPi.GPIO as GPIO
 
 def NoteFromString(StringNum):
-    global G_NOTELIST
-    return G_NOTELIST[StringNum]
+    global NOTELIST_NUM
+    global G_NOTELISTS
+    nl = G_NOTELISTS[NOTELIST_NUM]
+    return nl [StringNum]
 
 def Init_Midi():
     global G_MIDIOUT
@@ -96,6 +98,8 @@ def hwbutton_pressed(channel):
     if 1 & portb:
         # print "bit found"
         Cycle_Instrument()
+    elif 2 & portb:
+        Cycle_Notesets()
     while portb == buttonbus.read_port(1):
         time.sleep(0.01)
     
@@ -112,12 +116,17 @@ def Read_IOPiPorts():
     
 def Init_Others():
     global last_string_state
-    global instr_num
-    global G_NOTELIST
+    global INSTR_NUM
+    global NOTELIST_NUM
+    global G_NOTELISTS
     global G_INSTRUMENTS
-    G_NOTELIST = [43, 45, 47, 48, 50, 52, 54, 55, 57, 59, 60, 62]
+    noteset1 = [43, 45, 47, 48, 50, 52, 54, 55, 57, 59, 60, 62]
+    noteset2 = [43, 45, 47, 48, 50, 53, 54, 55, 57, 59, 60, 62]
+    noteset3 = [43, 45, 47, 48, 49, 50, 52, 54, 55, 57, 59, 60]
+    G_NOTELISTS = [noteset1, noteset2, noteset3]
     G_INSTRUMENTS = [0, 1, 4, 6, 8, 9, 13, 19, 26, 40, 42, 47, 53, 58, 60, 71, 76, 88, 95, 120, 122]
-    instr_num = 0
+    INSTR_NUM = 0
+    NOTELIST_NUM = 0
     last_string_state = 0
     
 
@@ -150,15 +159,38 @@ def Main_Loop():
         Check_Strings()
         time.sleep(0.05) 
 
-def probe_note():
+
+def simple_play_note(note, t):
     global G_MIDIOUT
-    note = 60
     G_MIDIOUT.send_message(note_off(note))
     G_MIDIOUT.send_message(note_on(note))
-    time.sleep(1) 
+    time.sleep(t) 
     G_MIDIOUT.send_message(note_off(note))
+        
+def probe_note():
+    simple_play_note(60, 1)
+    
 
+def probe_noteset():
+    global NOTELIST_NUM
+    Select_Instrument(0)
+    for i in range (NOTELIST_NUM + 1):
+        simple_play_note(60, 0.1) 
+        time.sleep(0.1) 
+    # for i in range(12):
+        # n = NoteFromString (i)
+        # G_MIDIOUT.send_message(note_off(n))
+        # G_MIDIOUT.send_message(note_on(n))
+        # time.sleep(0.2) 
+        # G_MIDIOUT.send_message(note_off(n))
 
+def Cycle_Notesets():
+    global NOTELIST_NUM
+    global G_NOTELISTS
+    NOTELIST_NUM = (NOTELIST_NUM + 1) % len(G_NOTELISTS)
+    print "Next Noteset", NOTELIST_NUM
+    probe_noteset()
+        
 def Select_Instrument(Instr):
     global G_MIDIOUT
     msg = [PROGRAM_CHANGE, Instr] 
@@ -167,9 +199,9 @@ def Select_Instrument(Instr):
 
 def Cycle_Instrument():
     global G_INSTRUMENTS
-    global instr_num
-    instr_num = (instr_num + 1) % len(G_INSTRUMENTS)
-    i = G_INSTRUMENTS[instr_num]
+    global INSTR_NUM
+    INSTR_NUM = (INSTR_NUM + 1) % len(G_INSTRUMENTS)
+    i = G_INSTRUMENTS[INSTR_NUM]
     print "Instrument", i
     Select_Instrument(i)
         
