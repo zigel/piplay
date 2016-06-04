@@ -121,7 +121,7 @@ def Init_Others():
     global G_NOTELISTS
     global G_INSTRUMENTS
     noteset1 = [43, 45, 47, 48, 50, 52, 54, 55, 57, 59, 60, 62]
-    noteset2 = [43, 45, 47, 48, 50, 53, 54, 55, 57, 59, 60, 62]
+    noteset2 = [43, 45, 47, 48, 50, 52, 53, 55, 57, 59, 60, 62]
     noteset3 = [43, 45, 47, 48, 49, 50, 52, 54, 55, 57, 59, 60]
     G_NOTELISTS = [noteset1, noteset2, noteset3]
     G_INSTRUMENTS = [0, 1, 4, 6, 8, 9, 13, 19, 26, 40, 42, 47, 53, 58, 60, 71, 76, 88, 95, 120, 122]
