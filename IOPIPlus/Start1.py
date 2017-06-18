@@ -85,11 +85,12 @@ def Init_IOPi():
     # Set up GPIO 23 as an input. The pull-up resistor is disabled as the level shifter will act as a pull-up. 
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
     # when a falling edge is detected on GPIO pin 23 the function button_pressed will be run  
-    GPIO.add_event_detect(23, GPIO.FALLING, callback=hwbutton_pressed) 
+    GPIO.add_event_detect(23, GPIO.BOTH, callback=hwbutton_pressed) 
     # create a function  to be called when GPIO 23 falls low
 
 def hwbutton_pressed(channel): 
     global buttonbus
+    global NOTELIST_NUM
     
     portb = buttonbus.read_interrupt_status(1)
     
@@ -98,8 +99,16 @@ def hwbutton_pressed(channel):
     if 1 & portb:
         # print "bit found"
         Cycle_Instrument()
-    elif 2 & portb:
-        Cycle_Notesets()
+    
+    if 2 & portb:
+        NOTELIST_NUM = 1
+        print "Black octave"
+    else:
+        NOTELIST_NUM = 0
+        print "White octave"
+        # Cycle_Notesets()
+        
+        
     while portb == buttonbus.read_port(1):
         time.sleep(0.01)
     
@@ -120,10 +129,7 @@ def Init_Others():
     global NOTELIST_NUM
     global G_NOTELISTS
     global G_INSTRUMENTS
-    noteset1 = [43, 45, 47, 48, 50, 52, 54, 55, 57, 59, 60, 62]
-    noteset2 = [43, 45, 47, 48, 50, 52, 53, 55, 57, 59, 60, 62]
-    noteset3 = [43, 45, 47, 48, 49, 50, 52, 54, 55, 57, 59, 60]
-    G_NOTELISTS = [noteset1, noteset2, noteset3]
+    Init_Notelists()
     G_INSTRUMENTS = [0, 1, 4, 6, 8, 9, 13, 19, 26, 40, 42, 47, 53, 58, 60, 71, 76, 88, 95, 120, 122]
     INSTR_NUM = 0
     NOTELIST_NUM = 0
@@ -132,6 +138,7 @@ def Init_Others():
 def Init_Notelists():
     global NOTELIST_NUM
     global G_NOTELISTS
+    
     C_Base = 36
     Octave_0_inc = [2, 2, 1, 2, 2, 2, 1, 2, 2, 1, 2]
     Oct_0 = reduce(lambda l, i: l + [l[-1] + i], Octave_0_inc, [C_Base])
@@ -147,6 +154,9 @@ def Init_Notelists():
     # [57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76]
     Oct_1_Up = [n + i for n,i in zip (Oct_1, Half_Up_Inc_1)]
     # [58, 59, 61, 63, 64, 66, 68, 70, 71, 73, 75, 77]
+    
+    G_NOTELISTS = [Oct_0, Oct_0_Up, Oct_1, Oct_1_Up]
+    
 
 def Check_Strings():
     global last_string_state
