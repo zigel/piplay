@@ -129,6 +129,24 @@ def Init_Others():
     NOTELIST_NUM = 0
     last_string_state = 0
     
+def Init_Notelists():
+    global NOTELIST_NUM
+    global G_NOTELISTS
+    C_Base = 36
+    Octave_0_inc = [2, 2, 1, 2, 2, 2, 1, 2, 2, 1, 2]
+    Oct_0 = reduce(lambda l, i: l + [l[-1] + i], Octave_0_inc, [C_Base])
+    # [36, 38, 40, 41, 43, 45, 47, 48, 50, 52, 53, 55]
+    Half_Up_Inc_0 =  [1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1]
+    Oct_0_Up = [n + i for n,i in zip (Oct_0, Half_Up_Inc_0)]
+    # [37, 39, 40, 42, 44, 46, 47, 49, 51, 52, 54, 56]
+    
+    A_Base = 57
+    Octave_1_inc = [2, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2]
+    Half_Up_Inc_1 =  [1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1]
+    Oct_1 = reduce(lambda l, i: l + [l[-1] + i], Octave_1_inc, [A_Base])
+    # [57, 59, 60, 62, 64, 65, 67, 69, 71, 72, 74, 76]
+    Oct_1_Up = [n + i for n,i in zip (Oct_1, Half_Up_Inc_1)]
+    # [58, 59, 61, 63, 64, 66, 68, 70, 71, 73, 75, 77]
 
 def Check_Strings():
     global last_string_state
