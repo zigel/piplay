@@ -130,7 +130,9 @@ def Init_Others():
     global G_NOTELISTS
     global G_INSTRUMENTS
     Init_Notelists()
-    G_INSTRUMENTS = [0, 1, 4, 6, 8, 9, 13, 19, 26, 40, 42, 47, 53, 58, 60, 71, 76, 88, 95, 120, 122]
+    # G_INSTRUMENTS = [0, 1, 4, 6, 8, 9, 13, 19, 26, 40, 42, 47, 53, 58, 60, 71, 76, 88, 95, 120, 122]
+    G_INSTRUMENTS = [14, 16, 38, 80, 98]
+    # G_INSTRUMENTS = range(127)
     INSTR_NUM = 0
     NOTELIST_NUM = 0
     last_string_state = 0
